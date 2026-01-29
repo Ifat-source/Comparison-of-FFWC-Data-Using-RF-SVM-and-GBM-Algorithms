@@ -1,0 +1,35 @@
+setwd("E:/Thesis/FFWC Forecaste2015-2021/Q_Comparision_ANN_S1")
+#Importing data
+Dataset=FFWC_5_days_Forecasted_WL_and_Discharge_Bahadurabad_Station_V2
+view=(FFWC_5_days_Forecasted_WL_and_Discharge_Bahadurabad_Station_V2)
+  # Time series plot
+  library(tidyverse)
+  library(reshape2)
+  library(scales)
+  library(dplyr)
+  library(ggplot2)
+  library(ggpubr)
+  df1 <-Dataset
+  colnames(df1) <- c('Year','Forecasted WL','FFWC Predicted Q','Observed Q','ANN Predicted Q for Scenario 01','ANN Predicted Q for Scenario 04')
+  df2 <- df1 %>%
+    select(Year, `Observed Q`,`FFWC Predicted Q`,`ANN Predicted Q for Scenario 01`) %>%
+    gather(key = "Legend", value = "Discharge", -Year)
+  df2$Year <- as.Date(as.character(df2$Year),'%d/%m/%Y')
+  print(df2)
+  ggplot(df2, aes(x = Year, y = Discharge)) + 
+    xlab(expression(Date))+ylab(expression(Discharge~(m^3/s)))+
+    geom_line(aes(linetype = Legend,color=Legend), size = 0.35) +
+    scale_linetype_manual(values=c("dashed", "dashed","solid"))+
+    scale_x_date(labels = date_format("%m-%Y"), date_breaks = "4 months") +
+    scale_y_continuous(limits = c(5000,100000),breaks = seq(5000,100000,by=15000))+
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5,size=6))+
+    ggtitle('Comparison of FFWC and ANN derived forecasted discharge at Bahadurabad station for Model Scenario A-01')+
+    theme(plot.title = element_text(hjust = 0.5,size=8))+
+    scale_color_manual(values = c("orange", "green","blue"))+
+    theme(legend.position=c(0.57,0.79))+
+    theme(legend.text = element_text(size=5),legend.title = element_text(size=7))+
+    theme(panel.background = element_rect(fill='transparent'))+
+    theme(panel.border = element_rect(fill = "transparent",color = "Black",size = 0.5))+
+    theme(legend.background = element_rect(colour = 'black', fill = 'white', linetype='dashed',size = 0.25))
+  ggsave(path = "E:/Thesis/FFWC Forecaste2015-2021/Q_Comparision_ANN_S1", filename = "FFWC Q Vs Predicted ANN Q(S1).jpeg",dpi=1200)
+  
